@@ -4,14 +4,14 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --background: 0 0% 2%;
+    --foreground: 0 0% 96%;
+    --card: 255 31% 8%;
+    --card-foreground: 0 0% 96%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 261 31% 49%;
+    --primary-foreground: 0 0% 100%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
@@ -22,7 +22,7 @@
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --ring: 93 50% 51%;
     --radius: 0.5rem;
   }
 
@@ -64,10 +64,13 @@
 
 html, body, #root {
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: contain;
+  background: #050505;
 }
 
 body {
@@ -77,12 +80,184 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f8fafc;
+  background: #050505;
+}
+
+.p4-ambient {
+  position: relative;
+  isolation: isolate;
+}
+
+.p4-ambient::before,
+.p4-ambient::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  inset: auto;
+  z-index: 0;
+  display: none;
+}
+
+.p4-ambient::before {
+  width: 48rem;
+  height: 48rem;
+  left: -16rem;
+  top: 4%;
+  background:
+    radial-gradient(circle, rgba(115, 87, 165, 0.16), transparent 58%),
+    radial-gradient(circle at 68% 45%, rgba(124, 194, 66, 0.07), transparent 48%);
+  filter: blur(22px);
+  animation: p4-drift-a 12s ease-in-out infinite alternate;
+}
+
+.p4-ambient::after {
+  width: 42rem;
+  height: 42rem;
+  right: -12rem;
+  bottom: -10rem;
+  background:
+    radial-gradient(circle, rgba(124, 194, 66, 0.09), transparent 56%),
+    radial-gradient(circle at 35% 60%, rgba(115, 87, 165, 0.11), transparent 50%);
+  filter: blur(22px);
+  animation: p4-drift-b 13s ease-in-out infinite alternate;
+}
+
+.p4-hero-shell {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.p4-hero-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.68;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.045), transparent 28%, rgba(124, 194, 66, 0.035) 64%, transparent 80%),
+    linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
+  box-shadow:
+    inset 0 0 80px rgba(255, 255, 255, 0.035),
+    inset 0 0 42px rgba(124, 194, 66, 0.025);
+  animation: p4-grid-shift 16s linear infinite;
+}
+
+.p4-hero-shell::after {
+  content: "";
+  position: absolute;
+  inset: -40% -20%;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 36%, rgba(255, 255, 255, 0.13) 46%, rgba(115, 87, 165, 0.13) 52%, rgba(124, 194, 66, 0.08) 57%, transparent 67%);
+  transform: translateX(-35%);
+  animation: p4-sheen 6s ease-in-out infinite;
+}
+
+.p4-grid-field {
+  position: absolute;
+  overflow: hidden;
+  z-index: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.035), transparent 25%, rgba(124, 194, 66, 0.03) 62%, transparent 78%),
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
+  box-shadow:
+    inset 0 0 100px rgba(255, 255, 255, 0.035),
+    inset 0 0 52px rgba(124, 194, 66, 0.025);
+  animation: p4-grid-shift 16s linear infinite;
+}
+
+.p4-grid-field::before,
+.p4-grid-field::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.p4-grid-field::before {
+  inset: -40% -20%;
+  background: linear-gradient(105deg, transparent 36%, rgba(255, 255, 255, 0.11) 46%, rgba(115, 87, 165, 0.1) 53%, rgba(124, 194, 66, 0.07) 59%, transparent 68%);
+  transform: translateX(-35%);
+  animation: p4-sheen 6s ease-in-out infinite;
+}
+
+.p4-grid-field::after {
+  left: 0;
+  right: 0;
+  top: -20%;
+  height: 24%;
+  background: linear-gradient(to bottom, transparent, rgba(124, 194, 66, 0.1), transparent);
+  animation: p4-scan 5s linear infinite;
+}
+
+@keyframes p4-grid-shift {
+  from {
+    background-position: 0 0, 0 0, 0 0;
+  }
+  to {
+    background-position: 0 0, 64px 32px, 64px 32px;
+  }
+}
+
+@keyframes p4-sheen {
+  0% {
+    transform: translateX(-45%) rotate(0.001deg);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.75;
+  }
+  68% {
+    opacity: 0.38;
+  }
+  100% {
+    transform: translateX(45%) rotate(0.001deg);
+    opacity: 0;
+  }
+}
+
+@keyframes p4-scan {
+  from {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.55;
+  }
+  88% {
+    opacity: 0.35;
+  }
+  to {
+    transform: translateY(520%);
+    opacity: 0;
+  }
+}
+
+@keyframes p4-drift-a {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(7rem, 2rem, 0) scale(1.08);
+  }
+}
+
+@keyframes p4-drift-b {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-5rem, -3rem, 0) scale(1.05);
+  }
 }
 
 #root {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
 
 /* Ensure full width and height for main app container */

@@ -77,6 +77,7 @@ async def upload_p4(
 
         # Parse structure
         structure = parse_p4_structure(file_path)
+        structure["_filename"] = file.filename
 
         if (
             not structure

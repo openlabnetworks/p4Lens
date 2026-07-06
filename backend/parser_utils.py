@@ -25,6 +25,20 @@ def extract_brace_block(
     return None, None
 
 
+def find_matching_paren(code: str, start_index: int) -> Optional[int]:
+    """Return the matching closing parenthesis index for start_index."""
+    paren_count = 0
+    for i in range(start_index, len(code)):
+        c = code[i]
+        if c == "(":
+            paren_count += 1
+        elif c == ")":
+            paren_count -= 1
+            if paren_count == 0:
+                return i
+    return None
+
+
 def extract_apply_block_logic(code: str, control_name: str) -> Dict[str, Any]:
     """Extract detailed apply block logic from a control block."""
     # Find the control block
@@ -57,6 +71,7 @@ def extract_apply_block_logic(code: str, control_name: str) -> Dict[str, Any]:
     # Extract if conditions (handle nested braces properly)
     # First, find all if statements with proper brace matching
     i = 0
+    if_ranges = []
     while i < len(apply_body):
         if apply_body[i : i + 2] == "if":
             # Find the condition
@@ -64,8 +79,8 @@ def extract_apply_block_logic(code: str, control_name: str) -> Dict[str, Any]:
             if paren_start == -1:
                 i += 1
                 continue
-            paren_end = apply_body.find(")", paren_start)
-            if paren_end == -1:
+            paren_end = find_matching_paren(apply_body, paren_start)
+            if paren_end is None:
                 i += 1
                 continue
 
@@ -83,6 +98,7 @@ def extract_apply_block_logic(code: str, control_name: str) -> Dict[str, Any]:
                 conditions.append(
                     {"condition": condition, "body": if_body, "type": "if"}
                 )
+                if_ranges.append((i, brace_end + 1))
                 # Extract tables from if body
                 tables_in_if = re.findall(r"(\w+)\.apply\(\)", if_body)
                 tables_applied.extend(tables_in_if)
@@ -96,14 +112,13 @@ def extract_apply_block_logic(code: str, control_name: str) -> Dict[str, Any]:
             i += 1
 
     # Extract direct table applications (not in if blocks)
-    # Build a cleaned version without if blocks
-    cleaned_body = apply_body
-    for cond in conditions:
-        # Remove this condition's body from cleaned_body
-        cond_pattern = f"if\\s*\\(\\s*{re.escape(cond['condition'])}\\s*\\)\\s*\\{{"
-        cleaned_body = re.sub(
-            cond_pattern + r"[^}]*\}", "", cleaned_body, flags=re.DOTALL
-        )
+    cleaned_parts = []
+    cursor = 0
+    for start, end in if_ranges:
+        cleaned_parts.append(apply_body[cursor:start])
+        cursor = end
+    cleaned_parts.append(apply_body[cursor:])
+    cleaned_body = "".join(cleaned_parts)
 
     direct_tables = re.findall(r"(\w+)\.apply\(\)", cleaned_body)
     tables_applied.extend(direct_tables)
@@ -279,11 +294,24 @@ def parse_p4_structure(path: str) -> Dict[str, Any]:
         fields = []
         for f in body.split(";"):
             f = f.strip()
+            if not f:
+                continue
             if ":" in f:
                 parts = f.split(":")
                 if len(parts) == 2:
                     field_name = parts[0].strip()
                     field_type = parts[1].strip()
+                    fields.append(
+                        {
+                            "field": field_name,
+                            "bits": field_type,
+                            "type": "bit" if "bit<" in field_type else "other",
+                        }
+                    )
+            else:
+                match = re.match(r"([\w<>]+)\s+(\w+)$", f)
+                if match:
+                    field_type, field_name = match.groups()
                     fields.append(
                         {
                             "field": field_name,
