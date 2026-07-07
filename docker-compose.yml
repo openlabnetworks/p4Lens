@@ -1,13 +1,10 @@
-version: "3.8"
-
 services:
   backend:
     build: ./backend
-    container_name: p4lens-backend
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     volumes:
-      - ./backend/uploads:/app/uploads
+      - p4lens-uploads:/app/uploads
     environment:
       - PYTHONUNBUFFERED=1
     healthcheck:
@@ -20,12 +17,12 @@ services:
 
   frontend:
     build: ./frontend
-    container_name: p4lens-frontend
-    ports:
-      - "3000:3000"
-    environment:
-      - VITE_API_BASE=http://backend:8000
+    expose:
+      - "3000"
     depends_on:
       backend:
         condition: service_healthy
     restart: always
+
+volumes:
+  p4lens-uploads:

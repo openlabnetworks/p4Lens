@@ -6,11 +6,11 @@ RUN npm install
 RUN npm run build
 
 # --- Production stage ---
-FROM node:20-alpine
-WORKDIR /app
+FROM nginx:1.27-alpine
 
-# use serve to host static site
-RUN npm install -g serve
-COPY --from=build /app/dist ./dist
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
 
-CMD ["serve", "-s", "dist", "-l", "3000"]
+EXPOSE 3000
+
+CMD ["nginx", "-g", "daemon off;"]
