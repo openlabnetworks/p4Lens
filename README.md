@@ -188,3 +188,16 @@ For issues, questions, or suggestions, please open an issue on GitHub or reach o
 ---
 
 Built with ❤️ for the P4 community
+
+## Production deployment
+
+The backend is deployed to Myprod/Nomad at
+`https://p4lens-api.sankalpjha.dev`. Changes under `backend/` on `main` are
+validated, built for Linux ARM64, published to the internal
+`ghcr.io/openlabnetworks/p4lens-backend` package, deployed by immutable digest,
+and verified through `/health` by `.github/workflows/backend-deploy.yml`.
+
+The workflow uses the repository-scoped `GITHUB_TOKEN` to publish the package
+and the `MYPROD_P4LENS_DEPLOY_TOKEN` Actions secret to call a deployment
+endpoint that can update only `p4lens-api`. Neither token belongs in source
+control or local environment files.
