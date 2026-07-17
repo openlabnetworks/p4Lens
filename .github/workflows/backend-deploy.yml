@@ -84,7 +84,7 @@ jobs:
           test -n "$DIGEST"
           payload="$(jq -nc --arg image "$IMAGE@$DIGEST" '{image: $image}')"
           curl --fail-with-body --silent --show-error \
-            --max-time 60 \
+            --max-time 120 \
             --header "Authorization: Bearer $DEPLOY_TOKEN" \
             --header "Content-Type: application/json" \
             --data "$payload" \
