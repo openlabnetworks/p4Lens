@@ -83,25 +83,12 @@ jobs:
           test -n "$DEPLOY_TOKEN"
           test -n "$DIGEST"
           payload="$(jq -nc --arg image "$IMAGE@$DIGEST" '{image: $image}')"
-          sleep 60
-          for attempt in 1 2 3; do
-            if output="$(curl --fail-with-body --silent --show-error \
-              --max-time 60 \
-              --header "Authorization: Bearer $DEPLOY_TOKEN" \
-              --header "Content-Type: application/json" \
-              --data "$payload" \
-              "$DEPLOY_URL")"; then
-              printf '%s\n' "$output"
-              exit 0
-            else
-              status=$?
-            fi
-            printf '%s\n' "$output" >&2
-            if [ "$attempt" -eq 3 ]; then
-              exit "$status"
-            fi
-            sleep 30
-          done
+          curl --fail-with-body --silent --show-error \
+            --max-time 60 \
+            --header "Authorization: Bearer $DEPLOY_TOKEN" \
+            --header "Content-Type: application/json" \
+            --data "$payload" \
+            "$DEPLOY_URL"
 
       - name: Verify production health
         run: |
