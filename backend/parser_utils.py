@@ -188,7 +188,6 @@ def parse_p4_structure(path: str) -> Dict[str, Any]:
     """Parse P4 file and extract comprehensive structure."""
     with open(path, encoding="utf-8") as f:
         code = f.read()
-
     structure = {}
 
     # --- Base blocks (parser, controls, deparser) ---
